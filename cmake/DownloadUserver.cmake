@@ -36,4 +36,12 @@ function(download_userver)
       GIT_TAG ${ARG_GIT_TAG}
       ${ARG_UNPARSED_ARGUMENTS}
   )
+  
+  # download jwt-cpp
+  CPMAddPackage(
+    NAME jwt-cpp
+    GITHUB_REPOSITORY Thalhammer/jwt-cpp
+    VERSION 0.7.1
+    OPTIONS "JWT_BUILD_EXAMPLES OFF" "JWT_BUILD_TESTS OFF"
+  )
 endfunction()

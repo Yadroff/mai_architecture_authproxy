@@ -9,6 +9,7 @@ services:
           - PREFIX=${PREFIX:-~/.local}
           - CCACHE_DIR=/service_template/.ccache
           - CORES_DIR=/cores
+          - JWT_SECRET_KEY=$(JWT_SECRET_KEY)
         volumes:
           - .:/service_template:rw
         ports:
