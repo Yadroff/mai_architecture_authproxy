@@ -4,4 +4,5 @@ logger-level: info
 
 is_testing: false
 
-server-port: 8080
+server-port: 8080s
+dynamic_configs_cache_path: /var/cache/authproxy/configs.json

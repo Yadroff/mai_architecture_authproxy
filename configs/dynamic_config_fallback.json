@@ -1,0 +1,6 @@
+{
+  "PROXY_ROUTES": {
+    "/api": "http://fallback-backend:8080"
+  },
+  "HTTP_CLIENT_CONNECTION_POOL_SIZE": 1000
+}

@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.12...3.31)
-project(service_template CXX)
+project(authproxy)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(DownloadUserver)
@@ -10,16 +13,32 @@ if(NOT userver_FOUND)
   download_userver(TRY_DIR third_party/userver)
 endif()
 
-userver_setup_environment()
+find_package(jwt-cpp QUIET)
+if (NOT jwt-cpp_FOUND)
+  message("Loading JWT-CPP")
+  include(cmake/get_cpm.cmake)
+  # download jwt-cpp
+  CPMAddPackage(
+    NAME jwt-cpp
+    GITHUB_REPOSITORY Thalhammer/jwt-cpp
+    VERSION 0.7.1
+    OPTIONS "JWT_BUILD_EXAMPLES OFF" "JWT_BUILD_TESTS OFF" "JWT_CMAKE_FILES_INSTALL ON"
+  )
+endif()
 
+userver_setup_environment()
 
 # Common sources
 add_library(${PROJECT_NAME}_objs OBJECT
-    src/hello.hpp
-    src/hello.cpp
+    src/handlers/hello.hpp
+    src/handlers/hello.cpp
+    src/components/jwt_checker.hpp
+    src/components/jwt_checker.cpp
+    src/components/auth_factory.hpp
+    src/components/auth_factory.cpp
 )
-target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver::core)
-
+target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver::core jwt-cpp::jwt-cpp)
+target_include_directories(${PROJECT_NAME}_objs PUBLIC ${CMAKE_SOURCE_DIR}/src)
 
 # The Service
 add_executable(${PROJECT_NAME} src/main.cpp)

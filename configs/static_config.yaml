@@ -9,6 +9,9 @@ components_manager:
 
     default_task_processor: main-task-processor
 
+    static_config_validation:
+        validate_all_components: true
+
     components:                       # Configuring components that were registered via component_list
         server:
             listener:                 # configuring the main listening socket...
@@ -22,12 +25,12 @@ components_manager:
                     level: $logger-level
                     overflow_behavior: discard  # Drop logs if the system is too busy to write them down.
 
-        # Dynamic config options. Cache is disabled, updates are disabled.
         dynamic-config:
-            # For most of userver dynamic configs, defaults are used, some are overridden here.
-            # See userver "dynamic config" docs for what configs exist.
-            defaults:
-                HTTP_CLIENT_CONNECTION_POOL_SIZE: 1000
+            fs-cache-path: /var/cache/service/configs.json
+            fs-task-processor: fs-task-processor
+            updates-enabled: true
+            defaults-path:
+                 - "/etc/authproxy/fallback.json"
 
         testsuite-support: {}
 
@@ -54,3 +57,18 @@ components_manager:
             path: /hello                  # Registering handler by URL '/hello'.
             method: GET,POST              # It will only reply to GET (HEAD) and POST requests.
             task_processor: main-task-processor  # Run it on CPU bound task processor
+
+        
+        jwt-auth-checker:
+            load-enabled: true
+            secret: 00ca2985e09dc63c1b1ffb0fd12d855d8db4e8bc2060cacd30db721dd79ef983688db720eab830d742b0e51e8e4d7e9962968ce511896c5a2243945f422b0db7c37945f44a6c99677f323d6d77f6ebf416fe8f845a4b34884fead22c4fc8a1d3062f29b555cb65d7ea54a90c2f53bda98f50c7fb16287a0b03d8a0a10cd552313ecbeb8984ed4d01f3eea67876facc60fdb44a11a336e02548b1d49523d60f02cbc77bd9a2868ceaca0b43409cdfa727fd18b540afb605e5b3aad97556e6e06f1196711e9ac0e015606693a86756beff034b370f0b6634f1a53c73d8e6a161222e0fe8157e919263929733514436c106e08bea94972e0ddf80cf23ebf703a779
+
+        # proxy-handler:
+        #     path: "/authproxy/{rest:.*}"  # Ловим все пути после префикса
+        #     method: "GET,POST,PUT,DELETE"  # Разрешенные методы
+        #     task_processor: main-task-processor
+        #     auth:
+        #         type: jwt-auth
+        #     proxy_settings:
+        #         target_url: "http://backend:8080"
+        #         service_prefix: "/api-proxy"
